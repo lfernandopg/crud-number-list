@@ -5,23 +5,23 @@ const FormNumber = () => {
 
     const { 
         editNumber, 
-        number, 
         addNumber,
-        updateNumber, 
-        inputChangeNumber, 
-        setEditNumber,
-        resetNumber, 
+        updateNumber,
+        values, 
+        handleInputChange, 
+        resetForm, 
+        setNumberState
     } = useContext(NumberContext)
 
     const onSubmit = e => {
         e.preventDefault()
         if (editNumber) {
-            updateNumber(number.id)
+            updateNumber()
         } else {
             addNumber()
         }
-        setEditNumber(false)
-        resetNumber()
+        setNumberState(false, 'editNumber')
+        resetForm()
     }
 
     return (  
@@ -31,9 +31,9 @@ const FormNumber = () => {
             <input 
                 type="number"
                 name="number"
-                value={number.number}
+                value={values.number}
                 placeholder="Number"
-                onChange={inputChangeNumber}
+                onChange={handleInputChange}
             />
             <button
                 type="submit"

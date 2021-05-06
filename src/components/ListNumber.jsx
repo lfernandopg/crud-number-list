@@ -5,20 +5,20 @@ const ListNumber = () => {
     
     const { 
         listNumbers, 
-        getNumbers, 
-        setEditNumber, 
-        getNumber, 
+        fetchNumbers, 
+        setNumberState, 
+        fetchNumber, 
         deleteNumber 
     } = useContext(NumberContext)
 
     useEffect(() => {
-        getNumbers()
+        fetchNumbers()
         // eslint-disable-next-line
     }, [])
 
     const onClickEdit = id => {
-        getNumber(id)
-        setEditNumber(true)
+        fetchNumber(id)
+        setNumberState(true, 'editNumber')
     }
 
     const onClickDelete = id => {

@@ -2,49 +2,64 @@ import React, { useReducer } from 'react'
 import NumberContext from './NumberContext'
 import NumberReducer from './NumberReducer'
 import { v4 as uuid } from 'uuid';
+import useForm from '../hooks/useForm';
 
 import { 
-    GET_NUMBERS,
     ADD_NUMBER,
     UPDATE_NUMBER,
     DELETE_NUMBER,
-    SET_EDIT_NUMBER,
-    SET_NUMBER
+    SET
 } from './types';
+
 
 const NumberState = props => {
 
-    const initialNumber = {
-        id : null,
-        number : 0
-    }
-
     const initialState = {
         listNumbers : [],
-        number : initialNumber,
+        number : {
+            id : '',
+            number : ''
+        },
         editNumber : false
     }
 
     const [ state, dispatch ] = useReducer(NumberReducer, initialState)
 
-    const getNumbers = () => {
+    const [ values, setValues, handleInputChange, resetForm ] = useForm({
+        number : ''
+    })
+
+    const fetchNumbers = () => {
         let listNumbers = JSON.parse(localStorage.getItem('listNumbers'));
         if (listNumbers) {
             dispatch({
-                type : GET_NUMBERS,
-                payload : listNumbers
+                type : SET,
+                payload : {
+                    property : 'listNumbers',
+                    value : listNumbers
+                }
             })
         }
     }
 
-    const getNumber = id => {
+    const fetchNumber = id => {
         let listNumbers = JSON.parse(localStorage.getItem('listNumbers'));
         if (listNumbers) {
             const [ number ] = state.listNumbers.filter(number => (number.id === id) )
             dispatch({
-                type : SET_NUMBER,
-                payload : number
+                type : SET,
+                payload : {
+                    property : 'number',
+                    value : number
+                }
             })
+            for (const [key, value] of Object.entries(number)) {
+                if (values.hasOwnProperty(key)) {
+                    setValues({
+                        [ key ] : value
+                    })
+                }
+            }
         }
     }
 
@@ -54,7 +69,7 @@ const NumberState = props => {
             listNumbers = [];
         }
         let number = {
-            ...state.number, 
+            ...values, 
             id : uuid()
         }
         localStorage.setItem('listNumbers', JSON.stringify([
@@ -67,13 +82,19 @@ const NumberState = props => {
         })
     }
 
-    const updateNumber = id => {
+    const updateNumber = (id, updatedNumber = null) => {
+        if (!updatedNumber) {
+            updatedNumber = {
+                ...state.number,
+                ...values
+            }
+        }
         let listNumbers = JSON.parse(localStorage.getItem('listNumbers'));
-        listNumbers = state.listNumbers.map(number => (number.id === state.number.id ? state.number : number) )
+        listNumbers = state.listNumbers.map(number => (number.id === updatedNumber.id ? updatedNumber : number) )
         localStorage.setItem('listNumbers', JSON.stringify([...listNumbers]));
         dispatch({
             type : UPDATE_NUMBER,
-            payload : state.number
+            payload : updatedNumber
         })
     }
 
@@ -87,38 +108,13 @@ const NumberState = props => {
         })
     }
 
-    const setNumber = number => {
+    const setNumberState = (value, property = null) => {
         dispatch({
-            type : SET_NUMBER,
-            payload : number
-        })
-    }
-
-    const setEditNumber = editNumber => {
-        dispatch({
-            type : SET_EDIT_NUMBER,
-            payload : editNumber
-        })
-    }
-
-    const inputChangeNumber = ({ target }) => {
-        let property = target.name;
-        let value = target.value;
-        if (state.number.hasOwnProperty(property)) {
-            dispatch({
-                type : SET_NUMBER,
-                payload : {
-                    ...state.number,
-                    [ property ] : value 
-                }
-            })
-        }
-    }
-
-    const resetNumber = () => {
-        dispatch({
-            type : SET_NUMBER,
-            payload : initialNumber
+            type : SET,
+            payload : {
+                value,
+                property
+            }
         })
     }
 
@@ -128,15 +124,15 @@ const NumberState = props => {
                 listNumbers : state.listNumbers,
                 number : state.number,
                 editNumber : state.editNumber,
-                getNumbers,
-                getNumber,
+                fetchNumbers,
+                fetchNumber,
                 addNumber,
                 updateNumber,
                 deleteNumber,
-                setNumber,
-                setEditNumber,
-                inputChangeNumber,
-                resetNumber
+                setNumberState,
+                handleInputChange,
+                resetForm,
+                values,
             }}
         >
             {props.children}

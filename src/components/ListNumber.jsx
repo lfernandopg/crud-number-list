@@ -13,6 +13,7 @@ const ListNumber = () => {
 
     useEffect(() => {
         getNumbers()
+        // eslint-disable-next-line
     }, [])
 
     const onClickEdit = id => {

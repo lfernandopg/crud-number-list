@@ -6,9 +6,11 @@ const ListNumber = () => {
     const { 
         listNumbers, 
         fetchNumbers, 
-        setNumberState, 
-        fetchNumber, 
-        deleteNumber 
+        setNumberState,  
+        deleteNumber,
+        handleValuesChange,
+        resetForm,
+        resetNumber
     } = useContext(NumberContext)
 
     useEffect(() => {
@@ -16,13 +18,17 @@ const ListNumber = () => {
         // eslint-disable-next-line
     }, [])
 
-    const onClickEdit = id => {
-        fetchNumber(id)
+    const onClickEdit = number => {
+        setNumberState(number, 'number')
+        handleValuesChange(number)
         setNumberState(true, 'editNumber')
     }
 
     const onClickDelete = id => {
         deleteNumber(id)
+        setNumberState(false, 'editNumber')
+        resetForm()
+        resetNumber()
     }
 
     return (
@@ -30,14 +36,14 @@ const ListNumber = () => {
             {listNumbers.map( number => (
                 <li
                     key={number.id}
-                >{number.number}
+                >{number.value}
                     <i 
                         className="fas fa-edit"
                         style={{
                             marginLeft : "10px",
                             cursor : "pointer"
                         }}
-                        onClick={() => onClickEdit(number.id)}
+                        onClick={() => onClickEdit(number)}
                     />
                     <i 
                         className="fas fa-trash-alt"

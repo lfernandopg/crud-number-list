@@ -1,8 +1,8 @@
 import React, { useReducer } from 'react'
 import NumberContext from './NumberContext'
 import NumberReducer from './NumberReducer'
+import useForm from '../hooks/useForm'
 import { v4 as uuid } from 'uuid';
-import useForm from '../hooks/useForm';
 
 import { 
     ADD_NUMBER,
@@ -11,23 +11,24 @@ import {
     SET
 } from './types';
 
-
 const NumberState = props => {
+
+    const initialNumber ={
+        id : '',
+        value : ''
+    }
 
     const initialState = {
         listNumbers : [],
-        number : {
-            id : '',
-            number : ''
-        },
+        number : initialNumber,
         editNumber : false
     }
 
     const [ state, dispatch ] = useReducer(NumberReducer, initialState)
 
-    const [ values, setValues, handleInputChange, resetForm ] = useForm({
-        number : ''
-    })
+    const [ values, handleValuesChange, handleInputChange, resetForm ] = useForm({
+        value : ''
+    }) 
 
     const fetchNumbers = () => {
         let listNumbers = JSON.parse(localStorage.getItem('listNumbers'));
@@ -45,7 +46,7 @@ const NumberState = props => {
     const fetchNumber = id => {
         let listNumbers = JSON.parse(localStorage.getItem('listNumbers'));
         if (listNumbers) {
-            const [ number ] = state.listNumbers.filter(number => (number.id === id) )
+            const [ number ] = listNumbers.filter(number => (number.id === id) )
             dispatch({
                 type : SET,
                 payload : {
@@ -53,23 +54,13 @@ const NumberState = props => {
                     value : number
                 }
             })
-            for (const [key, value] of Object.entries(number)) {
-                if (values.hasOwnProperty(key)) {
-                    setValues({
-                        [ key ] : value
-                    })
-                }
-            }
         }
     }
 
     const addNumber = () => {
-        let listNumbers = JSON.parse(localStorage.getItem('listNumbers'));
-        if (!listNumbers) {
-            listNumbers = [];
-        }
+        let listNumbers = state.listNumbers;
         let number = {
-            ...values, 
+            ...state.number, 
             id : uuid()
         }
         localStorage.setItem('listNumbers', JSON.stringify([
@@ -82,15 +73,11 @@ const NumberState = props => {
         })
     }
 
-    const updateNumber = (id, updatedNumber = null) => {
+    const updateNumber = (updatedNumber = null) => {
         if (!updatedNumber) {
-            updatedNumber = {
-                ...state.number,
-                ...values
-            }
-        }
-        let listNumbers = JSON.parse(localStorage.getItem('listNumbers'));
-        listNumbers = state.listNumbers.map(number => (number.id === updatedNumber.id ? updatedNumber : number) )
+            updatedNumber = state.number
+        } 
+        const listNumbers = state.listNumbers.map(number => (number.id === updatedNumber.id ? updatedNumber : number) )
         localStorage.setItem('listNumbers', JSON.stringify([...listNumbers]));
         dispatch({
             type : UPDATE_NUMBER,
@@ -99,8 +86,7 @@ const NumberState = props => {
     }
 
     const deleteNumber = id => {
-        let listNumbers = JSON.parse(localStorage.getItem('listNumbers'));
-        listNumbers = state.listNumbers.filter(number => (number.id !== id) )
+        const listNumbers = state.listNumbers.filter(number => (number.id !== id) )
         localStorage.setItem('listNumbers', JSON.stringify([...listNumbers]));
         dispatch({
             type : DELETE_NUMBER,
@@ -118,6 +104,10 @@ const NumberState = props => {
         })
     }
 
+    const resetNumber = () => {
+        setNumberState(initialNumber, 'number')
+    }
+
     return (        
         <NumberContext.Provider
             value={{
@@ -130,9 +120,11 @@ const NumberState = props => {
                 updateNumber,
                 deleteNumber,
                 setNumberState,
+                resetNumber,
+                values,
+                handleValuesChange,
                 handleInputChange,
                 resetForm,
-                values,
             }}
         >
             {props.children}

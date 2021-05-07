@@ -1,17 +1,28 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import NumberContext from '../context/NumberContext'
 
 const FormNumber = () => {
 
-    const { 
+    const {
+        number, 
         editNumber, 
         addNumber,
         updateNumber,
-        values, 
-        handleInputChange, 
-        resetForm, 
-        setNumberState
+        setNumberState,
+        values,
+        handleInputChange,
+        resetForm,
+        resetNumber
     } = useContext(NumberContext)
+
+    
+    useEffect(() => {
+        setNumberState({
+            ...number,
+            ...values
+        }, 'number')
+         // eslint-disable-next-line
+    }, [values])
 
     const onSubmit = e => {
         e.preventDefault()
@@ -21,6 +32,7 @@ const FormNumber = () => {
             addNumber()
         }
         setNumberState(false, 'editNumber')
+        resetNumber()
         resetForm()
     }
 
@@ -30,8 +42,8 @@ const FormNumber = () => {
         >
             <input 
                 type="number"
-                name="number"
-                value={values.number}
+                name="value"
+                value={values.value}
                 placeholder="Number"
                 onChange={handleInputChange}
             />

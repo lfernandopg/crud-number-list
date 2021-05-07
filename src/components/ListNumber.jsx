@@ -36,7 +36,7 @@ const ListNumber = () => {
             {listNumbers.map( number => (
                 <li
                     key={number.id}
-                >{number.value}
+                >{number.number}
                     <i 
                         className="fas fa-edit"
                         style={{

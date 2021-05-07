@@ -9,7 +9,7 @@ const FormNumber = () => {
         addNumber,
         updateNumber,
         setNumberState,
-        values,
+        formValues,
         handleInputChange,
         resetForm,
         resetNumber
@@ -19,10 +19,10 @@ const FormNumber = () => {
     useEffect(() => {
         setNumberState({
             ...number,
-            ...values
+            ...formValues
         }, 'number')
          // eslint-disable-next-line
-    }, [values])
+    }, [formValues])
 
     const onSubmit = e => {
         e.preventDefault()
@@ -42,8 +42,8 @@ const FormNumber = () => {
         >
             <input 
                 type="number"
-                name="value"
-                value={values.value}
+                name="number"
+                value={formValues.number}
                 placeholder="Number"
                 onChange={handleInputChange}
             />

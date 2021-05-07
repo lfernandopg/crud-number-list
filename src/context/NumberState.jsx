@@ -15,7 +15,7 @@ const NumberState = props => {
 
     const initialNumber ={
         id : '',
-        value : ''
+        number : ''
     }
 
     const initialState = {
@@ -26,8 +26,8 @@ const NumberState = props => {
 
     const [ state, dispatch ] = useReducer(NumberReducer, initialState)
 
-    const [ values, handleValuesChange, handleInputChange, resetForm ] = useForm({
-        value : ''
+    const [ formValues, handleValuesChange, handleInputChange, resetForm ] = useForm({
+        number : ''
     }) 
 
     const fetchNumbers = () => {
@@ -121,7 +121,7 @@ const NumberState = props => {
                 deleteNumber,
                 setNumberState,
                 resetNumber,
-                values,
+                formValues,
                 handleValuesChange,
                 handleInputChange,
                 resetForm,
